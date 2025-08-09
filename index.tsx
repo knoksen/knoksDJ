@@ -21,8 +21,8 @@ import {decode, decodeAudioData} from './utils';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY,
-  apiVersion: 'v1alpha',
 });
+// The 'lyria-realtime-exp' model is an experimental model for music generation.
 let model = 'lyria-realtime-exp';
 
 interface Prompt {
@@ -241,8 +241,13 @@ class IconButton extends LitElement {
       justify-content: center;
       pointer-events: none;
     }
-    :host(:hover) svg {
+    :host(:is(:hover, :focus-visible)) svg {
       transform: scale(1.2);
+    }
+    :host(:focus-visible) {
+      outline: 2px solid var(--focus-ring-color, #9900ff);
+      outline-offset: 2px;
+      border-radius: 50%;
     }
     svg {
       width: 100%;
@@ -259,6 +264,27 @@ class IconButton extends LitElement {
       cursor: pointer;
     }
   ` as CSSResultGroup;
+
+  constructor() {
+    super();
+    this.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'button');
+    }
+    if (!this.hasAttribute('tabindex')) {
+      // Make it focusable
+      this.setAttribute('tabindex', '0');
+    }
+  }
 
   // Method to be implemented by subclasses to provide the specific icon SVG
   protected renderIcon() {
@@ -1195,7 +1221,6 @@ class SettingsController extends LitElement {
 
     if (newConfig.density !== undefined) {
       this.lastDefinedDensity = newConfig.density;
-      console.log(this.lastDefinedDensity);
     }
 
     if (newConfig.brightness !== undefined) {
@@ -1982,9 +2007,12 @@ class PromptDj extends LitElement {
         </div>
         <div class="side-actions">
           <surprise-me-button
+            aria-label="Generate new random prompts"
             .loading=${this.isGeneratingPrompts}
             @click=${this.handleSurpriseMe}></surprise-me-button>
-          <add-prompt-button @click=${this.handleAddPrompt}></add-prompt-button>
+          <add-prompt-button
+            aria-label="Add a new prompt"
+            @click=${this.handleAddPrompt}></add-prompt-button>
         </div>
       </div>
       <div id="settings-container">
@@ -1993,9 +2021,12 @@ class PromptDj extends LitElement {
       </div>
       <div class="playback-container">
         <play-pause-button
+          aria-label=${this.playbackState === 'playing' ? 'Pause' : 'Play'}
           @click=${this.handlePlayPause}
           .playbackState=${this.playbackState}></play-pause-button>
-        <reset-button @click=${this.handleReset}></reset-button>
+        <reset-button
+          aria-label="Reset session"
+          @click=${this.handleReset}></reset-button>
       </div>
       <toast-message></toast-message>
       <confirmation-dialog
@@ -2085,6 +2116,21 @@ function setStoredPrompts(prompts: Map<string, Prompt>) {
 }
 
 function main(container: HTMLElement) {
+  if (!process.env.API_KEY) {
+    container.innerHTML = `
+      <div style="font-family: sans-serif; padding: 2rem; color: #fff; background: #111; height: 100%; box-sizing: border-box;">
+        <h1>API Key Not Found</h1>
+        <p>A Google Gemini API key is required to run PromptDJ.</p>
+        <p>
+          For local development, please create a <code>.env</code> file in the root of the project and add your key:
+          <pre style="background: #2a2a2a; padding: 1rem; border-radius: 5px;">API_KEY="YOUR_API_KEY_HERE"</pre>
+        </p>
+        <p>If you have deployed this application, ensure the <code>API_KEY</code> environment variable is set correctly in your hosting provider's settings.</p>
+        <p><a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color: #93c5fd;">Get an API Key from Google AI Studio</a></p>
+      </div>
+    `;
+    return;
+  }
   gen(container);
 }
 

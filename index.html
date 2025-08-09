@@ -4,31 +4,22 @@
     <title>PromptDJ</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2a2a2a">
     <link rel="stylesheet" href="/index.css">
     <script type="importmap">
-      {
-        "imports": {
-          "lit/": "https://esm.sh/lit@^3.3.0/",
-          "lit": "https://esm.sh/lit@^3.3.0",
-          "@google/genai": "https://esm.sh/@google/genai@^1.0.0"
-        }
-      }
-    </script>
+{
+  "imports": {
+    "lit/": "https://esm.sh/lit@^3.3.0/",
+    "lit": "https://esm.sh/lit@^3.3.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.0.0",
+    "vite": "https://esm.sh/vite@^7.1.1",
+    "vite-plugin-pwa": "https://esm.sh/vite-plugin-pwa@^1.0.2",
+    "process": "https://esm.sh/process@^0.11.10"
+  }
+}
+</script>
   </head>
   <body>
     <script type="module" src="/index.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(registration => {
-            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-          }).catch(err => {
-            console.log('ServiceWorker registration failed: ', err);
-          });
-        });
-      }
-    </script>
   </body>
 </html>

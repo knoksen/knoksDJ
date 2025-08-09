@@ -1,0 +1,21 @@
+{
+  "name": "PromptDJ",
+  "description": "Steer a continuous stream of music with built in text prompts. One-click deploy to Heroku.",
+  "repository": "https://github.com/knoksen/knoksDJ",
+  "keywords": ["lit", "music", "generative-ai", "google", "gemini"],
+  "env": {
+    "API_KEY": {
+      "description": "Your Google Gemini API Key.",
+      "value": "",
+      "required": true
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "npm run build"
+  }
+}

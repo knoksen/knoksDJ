@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Launch App</title>
+  <style>
+    :root { font-family: ui-sans-serif, system-ui, -apple-system; }
+    body { margin: 0; padding: 2rem; display: grid; place-items: center; background: #0f172a; color: #e2e8f0; }
+    .card { max-width: 780px; width: 100%; background: #111827; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
+    h1 { margin: 0 0 .5rem 0; font-size: 1.75rem; }
+    p  { opacity: .85; }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); margin-top: 1.5rem;}
+    .btn { display: block; text-decoration: none; padding: 1rem; border-radius: .75rem; border: 1px solid #374151; background: #111827; }
+    .btn:hover { border-color: #6b7280; transform: translateY(-1px); }
+    .btn strong { display:block; font-size:1.05rem; color:#f9fafb }
+    .btn span { display:block; font-size:.9rem; opacity:.9 }
+    .small { margin-top:1rem; font-size:.85rem; opacity:.8 }
+    code { background:#0b1020; padding:.15rem .35rem; border-radius:.35rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🚀 Launch App</h1>
+    <p>Velg hvordan du vil starte prosjektet – skyutvikling, én-klikk deploy eller kjør lokalt.</p>
+
+    <div class="grid" id="options"></div>
+    <div class="small" id="detected"></div>
+  </div>
+
+<script>
+  // --- Configure here (or auto-derive from URL) ---
+  const OWNER = "knoksen";
+  const REPO  = "knoksDJ";
+
+  // Deep links
+  const links = {
+    codespaces: `https://codespaces.new/${OWNER}/${REPO}?quickstart=1`,
+    vercel:     `https://vercel.com/new/git/external?repository-url=https://github.com/${OWNER}/${REPO}`,
+    netlify:    `https://app.netlify.com/start/deploy?repository=https://github.com/${OWNER}/${REPO}`,
+    heroku:     `https://heroku.com/deploy?template=https://github.com/${OWNER}/${REPO}`,
+    sandbox:    `https://codesandbox.io/s/github/${OWNER}/${REPO}`,
+    replit:     `https://replit.com/github/${OWNER}/${REPO}`,
+    glitch:     `https://glitch.com/edit/#!/import/github/${OWNER}/${REPO}`,
+  };
+
+  const opts = [
+    { key:"codespaces", title:"Open in GitHub Codespaces", desc:"Kjør i devcontainer uten å installere noe." },
+    { key:"vercel",     title:"Deploy to Vercel",          desc:"Én-klikk produksjonsdeploy for web." },
+    { key:"netlify",    title:"Deploy to Netlify",         desc:"Én-klikk deploy for Jamstack-apper." },
+    { key:"heroku",     title:"Deploy to Heroku",          desc:"Én-klikk PaaS-deploy (web/API)." },
+    { key:"sandbox",    title:"Open in CodeSandbox",       desc:"Rask front-end sandbox." },
+    { key:"replit",     title:"Run on Replit",             desc:"Kjør i nettleseren." },
+    { key:"glitch",     title:"Remix on Glitch",           desc:"Node-apper i skyen." },
+  ];
+
+  // Simple heuristics: if logged in to GitHub, prefer Codespaces
+  async function detect() {
+    const out = [];
+    try {
+      // Basic hint: if running on *.github.io, we can suggest Codespaces
+      out.push("🌐 Miljø: GitHub Pages");
+    } catch {}
+    return out.join(" • ");
+  }
+
+  function render() {
+    const grid = document.getElementById("options");
+    grid.innerHTML = "";
+    opts.forEach(o => {
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = links[o.key];
+      a.innerHTML = `<strong>${o.title}</strong><span>${o.desc}</span>`;
+      grid.appendChild(a);
+    });
+
+    // New local run instructions
+    const localSection = document.createElement("div");
+    localSection.style.gridColumn = "1 / -1";
+    localSection.style.padding = "1rem";
+    localSection.style.border = "1px solid #374151";
+    localSection.style.borderRadius = ".75rem";
+    localSection.style.background = "transparent";
+    localSection.style.textAlign = "left";
+    localSection.innerHTML = `
+      <strong style="font-size: 1.25rem; margin-bottom: .75rem; display: block; color:#f9fafb;">Run Locally</strong>
+      <ol style="padding-left: 1.25rem; margin: 0; font-size: .9rem; opacity: .9; line-height: 1.7;">
+        <li style="margin-bottom: .5rem;">Clone the project: <br><code style="background:#0b1020; padding:.35rem .5rem; border-radius:.35rem; display: inline-block; margin-top:.25rem; width: 95%; overflow: auto; white-space: nowrap;">git clone https://github.com/${OWNER}/${REPO}.git</code></li>
+        <li style="margin-bottom: .5rem;">Go to the project directory: <br><code style="background:#0b1020; padding:.35rem .5rem; border-radius:.35rem; display: inline-block; margin-top:.25rem;">cd ${REPO}</code></li>
+        <li style="margin-bottom: .5rem;">Set up your API Key by copying the example and editing the new file:<br><code style="background:#0b1020; padding:.35rem .5rem; border-radius:.35rem; display: inline-block; margin-top:.25rem;">cp .env.example .env</code></li>
+        <li>Install and run: <br><code style="background:#0b1020; padding:.35rem .5rem; border-radius:.35rem; display: inline-block; margin-top:.25rem;">npm install && npm start</code></li>
+      </ol>
+      <div style="margin-top:1rem; font-size:.85rem; opacity:.8">Requires <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer" style="color:#93c5fd; text-decoration: none;">Node.js</a>.</div>
+    `;
+    grid.appendChild(localSection);
+  }
+
+  render();
+  detect().then(text => { document.getElementById("detected").textContent = text; });
+</script>
+</body>
+</html>
