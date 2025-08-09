@@ -1,0 +1,21 @@
+{
+  "name": "PromptDJ",
+  "short_name": "PromptDJ",
+  "description": "Steer a continuous stream of music with text prompts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#2a2a2a",
+  "icons": [
+    {
+      "src": "https://storage.googleapis.com/generative-ai-devsite/doc-img/cb2/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://storage.googleapis.com/generative-ai-devsite/doc-img/cb2/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
