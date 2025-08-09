@@ -9,6 +9,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@google/genai": "^0.14.0",
+    "lit": "^3.3.0"
+  },
   "devDependencies": {
     "vite": "^5.2.11",
     "vite-plugin-pwa": "^0.20.0"

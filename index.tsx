@@ -1,3 +1,5 @@
+
+
 /**
  * @fileoverview Control real time music with text prompts
  * @license
@@ -21,9 +23,10 @@ import {decode, decodeAudioData} from './utils';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY,
+  apiVersion: 'v1alpha',
 });
-// The 'lyria-realtime-exp' model is an experimental model for music generation.
-let model = 'lyria-realtime-exp';
+// The 'models/lyria-realtime-exp' model is an experimental model for music generation.
+const model = 'models/lyria-realtime-exp';
 
 interface Prompt {
   readonly promptId: string;
@@ -844,7 +847,6 @@ class PromptController extends LitElement {
   }
 
   private updateText() {
-    console.log('updateText');
     const newText = this.textInput.textContent?.trim();
     if (newText === '') {
       this.textInput.textContent = this.text;
@@ -1399,9 +1401,9 @@ class SettingsController extends LitElement {
               @input=${this.handleInputChange} />
             <label for="auto-brightness">Auto</label>
             <span
-              >${(cfg.brightness ?? this.lastDefinedBrightness ?? 0.5).toFixed(
-                2,
-              )}</span
+              >${(
+                cfg.brightness ?? this.lastDefinedBrightness ?? 0.5
+              ).toFixed(2)}</span
             >
           </div>
         </div>
@@ -1613,8 +1615,6 @@ class PromptDj extends LitElement {
       model: model,
       callbacks: {
         onmessage: async (e: LiveMusicServerMessage) => {
-          console.log('Received message from the server: %s\n');
-          console.log(e);
           if (e.setupComplete) {
             this.connectionError = false;
           }
@@ -1649,7 +1649,7 @@ class PromptDj extends LitElement {
             }
 
             if (this.nextStartTime < this.audioContext.currentTime) {
-              console.log('under run');
+              console.warn('Audio buffer underrun. Resetting playback time.');
               this.playbackState = 'loading';
               this.nextStartTime = 0;
               return;
@@ -1659,16 +1659,16 @@ class PromptDj extends LitElement {
           }
         },
         onerror: (e: ErrorEvent) => {
-          console.log('Error occurred: %s\n', JSON.stringify(e));
+          console.error('Session error occurred:', e.error);
           this.connectionError = true;
           this.stopAudio();
           this.toastMessage.show('Connection error, please restart audio.');
         },
-        onclose: (e: CloseEvent) => {
-          console.log('Connection closed.');
+        onclose: () => {
+          console.warn('Connection closed.');
           this.connectionError = true;
           this.stopAudio();
-          this.toastMessage.show('Connection error, please restart audio.');
+          this.toastMessage.show('Connection closed, please restart audio.');
         },
       },
     });
@@ -1770,7 +1770,6 @@ class PromptDj extends LitElement {
     } else if (this.playbackState === 'loading') {
       this.stopAudio();
     }
-    console.debug('handlePlayPause');
   }
 
   private pauseAudio() {
@@ -2072,14 +2071,11 @@ function getStoredPrompts(): Map<string, Prompt> {
   if (storedPrompts) {
     try {
       const prompts = JSON.parse(storedPrompts) as Prompt[];
-      console.log('Loading stored prompts', prompts);
       return new Map(prompts.map((prompt) => [prompt.promptId, prompt]));
     } catch (e) {
       console.error('Failed to parse stored prompts', e);
     }
   }
-
-  console.log('No stored prompts, creating prompt presets');
 
   const numDefaultPrompts = Math.min(4, PROMPT_TEXT_PRESETS.length);
   const shuffledPresetTexts = [...PROMPT_TEXT_PRESETS].sort(

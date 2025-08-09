@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Launch App</title>
+  <title>Deploy PromptDJ</title>
   <style>
     :root { font-family: ui-sans-serif, system-ui, -apple-system; }
     body { margin: 0; padding: 2rem; display: grid; place-items: center; background: #0f172a; color: #e2e8f0; }
@@ -21,22 +21,34 @@
 </head>
 <body>
   <div class="card">
-    <h1>🚀 Launch App</h1>
-    <p>Velg hvordan du vil starte prosjektet – skyutvikling, én-klikk deploy eller kjør lokalt.</p>
+    <h1>🚀 Deploy PromptDJ</h1>
+    <p>Choose how you want to start the project – cloud development, one-click deploy, or run locally.</p>
 
     <div class="grid" id="options"></div>
     <div class="small" id="detected"></div>
   </div>
 
 <script>
-  // --- Configure here (or auto-derive from URL) ---
-  const OWNER = "knoksen";
-  const REPO  = "knoksDJ";
+  // --- Auto-derive from URL, with fallback ---
+  let OWNER = "knoksen";
+  let REPO  = "knoksDJ";
+
+  try {
+    const pathParts = window.location.pathname.split('/').filter(p => p);
+    if (window.location.hostname.endsWith('github.io') && pathParts.length >= 1) {
+      // For URLs like OWNER.github.io/REPO
+      OWNER = pathParts[0];
+      REPO = pathParts[1] || REPO;
+    }
+  } catch(e) {
+    console.warn("Could not derive OWNER/REPO from URL", e);
+  }
+
 
   // Deep links
   const links = {
     codespaces: `https://codespaces.new/${OWNER}/${REPO}?quickstart=1`,
-    vercel:     `https://vercel.com/new/git/external?repository-url=https://github.com/${OWNER}/${REPO}`,
+    vercel:     `https://vercel.com/new/clone?repository-url=https://github.com/${OWNER}/${REPO}&env=API_KEY&envDescription=Your%20Google%20Gemini%20API%20Key.&envLink=https://aistudio.google.com/app/apikey`,
     netlify:    `https://app.netlify.com/start/deploy?repository=https://github.com/${OWNER}/${REPO}`,
     heroku:     `https://heroku.com/deploy?template=https://github.com/${OWNER}/${REPO}`,
     sandbox:    `https://codesandbox.io/s/github/${OWNER}/${REPO}`,
@@ -45,21 +57,19 @@
   };
 
   const opts = [
-    { key:"codespaces", title:"Open in GitHub Codespaces", desc:"Kjør i devcontainer uten å installere noe." },
-    { key:"vercel",     title:"Deploy to Vercel",          desc:"Én-klikk produksjonsdeploy for web." },
-    { key:"netlify",    title:"Deploy to Netlify",         desc:"Én-klikk deploy for Jamstack-apper." },
-    { key:"heroku",     title:"Deploy to Heroku",          desc:"Én-klikk PaaS-deploy (web/API)." },
-    { key:"sandbox",    title:"Open in CodeSandbox",       desc:"Rask front-end sandbox." },
-    { key:"replit",     title:"Run on Replit",             desc:"Kjør i nettleseren." },
-    { key:"glitch",     title:"Remix on Glitch",           desc:"Node-apper i skyen." },
+    { key:"codespaces", title:"Open in GitHub Codespaces", desc:"Full dev environment in your browser." },
+    { key:"vercel",     title:"Deploy to Vercel",          desc:"One-click production deployment for web." },
+    { key:"netlify",    title:"Deploy to Netlify",         desc:"One-click deployment for Jamstack apps." },
+    { key:"heroku",     title:"Deploy to Heroku",          desc:"One-click PaaS deployment (web/API)." },
+    { key:"sandbox",    title:"Open in CodeSandbox",       desc:"Quick front-end sandbox." },
+    { key:"replit",     title:"Run on Replit",             desc:"Run in your browser." },
+    { key:"glitch",     title:"Remix on Glitch",           desc:"Node apps in the cloud." },
   ];
 
-  // Simple heuristics: if logged in to GitHub, prefer Codespaces
   async function detect() {
     const out = [];
     try {
-      // Basic hint: if running on *.github.io, we can suggest Codespaces
-      out.push("🌐 Miljø: GitHub Pages");
+      out.push(`🌐 Repo: ${OWNER}/${REPO}`);
     } catch {}
     return out.join(" • ");
   }

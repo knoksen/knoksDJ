@@ -1,13 +1,13 @@
 <!-- One-Click Start -->
 <p align="center">
   <a href="https://knoksen.github.io/knoksDJ/">
-    <img alt="Launch App" src="https://img.shields.io/badge/LAUNCH%20APP-%F0%9F%9A%80-brightgreen?style=for-the-badge">
+    <img alt="Deploy & Develop" src="https://img.shields.io/badge/DEPLOY%20%26%20DEVELOP-%F0%9F%9A%80-brightgreen?style=for-the-badge">
   </a>
 </p>
 
 <p align="center">
   <a href="https://codespaces.new/knoksen/knoksDJ"><img alt="Open in Codespaces" src="https://github.com/codespaces/badge.svg"></a>
-  <a href="https://vercel.com/new/git/external?repository-url=https://github.com/knoksen/knoksDJ"><img alt="Deploy with Vercel" src="https://vercel.com/button"></a>
+  <a href="https://vercel.com/new/clone?repository-url=https://github.com/knoksen/knoksDJ&env=API_KEY&envDescription=Your%20Google%20Gemini%20API%20Key.&envLink=https://aistudio.google.com/app/apikey"><img alt="Deploy with Vercel" src="https://vercel.com/button"></a>
   <a href="https://app.netlify.com/start/deploy?repository=https://github.com/knoksen/knoksDJ"><img alt="Deploy to Netlify" src="https://www.netlify.com/img/deploy/button.svg"></a>
   <a href="https://heroku.com/deploy?template=https://github.com/knoksen/knoksDJ"><img alt="Deploy to Heroku" src="https://www.herokucdn.com/deploy/button.svg"></a>
 </p>
